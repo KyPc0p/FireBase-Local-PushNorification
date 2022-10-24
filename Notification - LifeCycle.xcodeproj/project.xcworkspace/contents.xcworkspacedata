@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/artemharcenko/Downloads/SWIFT /TrainingApps/LifeCycle/Notification - LifeCycle.xcodeproj">
+      location = "self:">
    </FileRef>
 </Workspace>

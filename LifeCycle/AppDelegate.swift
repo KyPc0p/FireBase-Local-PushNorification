@@ -7,68 +7,35 @@
 
 import UIKit
 import UserNotifications
+import FirebaseCore
+import FirebaseMessaging
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     
-    let notificationCenter = UNUserNotificationCenter.current()
+    let notifications = Notifications()
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        requesAutorization()
-        notificationCenter.delegate = self
+        FirebaseApp.configure()
+        notifications.notificationCenter.delegate = notifications
+        Messaging.messaging().delegate = self
+        application.registerForRemoteNotifications()
+        
         return true
+    }
+    
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        messaging.token { token, _ in
+            guard let token = token else {
+                print("token error")
+                return
+            }
+            print("TOKEN - \(token)")
+        }
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         UIApplication.shared.applicationIconBadgeNumber = 0
-    }
-    
-    func requesAutorization() {
-        notificationCenter.requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
-            print("Permission granted \(granted)")
-
-            guard granted else { return }
-            self.getNotificationSettings()
-        }
-    }
-    
-    func getNotificationSettings() {
-        self.notificationCenter.getNotificationSettings { settings in
-            guard settings.authorizationStatus == .authorized else { return }
-//            print("Notification settings \(settings)")
-        }
-    }
-    
-    func sentNotification(with type: String) {
-        let content = UNMutableNotificationContent()
-        content.title = type
-        content.body = "Был произведен тестовый вызов \(type)"
-        content.sound = .default
-        
-
-        let identifier = "notification"
-
-        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
-
-        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
-
-        notificationCenter.add(request) { error in
-            print(error?.localizedDescription ?? "Error")
-        }
-    }
-    
-}
-
-extension AppDelegate: UNUserNotificationCenterDelegate {
-    //позволяет показать уведомление при открытом приложении
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        completionHandler([.banner, .sound])
-    }
-    //реагирует на нажатие по уведомлению
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        //some code
-        
-        completionHandler()
     }
 }
 

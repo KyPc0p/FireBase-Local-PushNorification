@@ -10,9 +10,9 @@ import UIKit
 
 class TableViewController: UITableViewController {
     
-    let appDelegate = UIApplication.shared.delegate as? AppDelegate
+    let notifications = Notifications()
     
-    let notifications = ["Local Notification",
+    let notificationsType = ["Local Notification",
                          "Local Notification with Action",
                          "Local Notification with Content",
                          "Push Notification with  APNs",
@@ -28,14 +28,14 @@ class TableViewController: UITableViewController {
 
     // MARK: - TableViewDataSource
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        notifications.count
+        notificationsType.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
 
         var content = cell.defaultContentConfiguration()
-        content.text = notifications[indexPath.row]
+        content.text = notificationsType[indexPath.row]
         cell.contentConfiguration = content
         
         return cell
@@ -45,7 +45,7 @@ class TableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let cell = tableView.cellForRow(at: indexPath)
         
-        let notificationType = notifications[indexPath.row]
+        let notificationType = notificationsType[indexPath.row]
         
         let alert = UIAlertController(
             title: notificationType,
@@ -54,7 +54,7 @@ class TableViewController: UITableViewController {
         )
         
         alert.addAction(UIAlertAction(title: "OK", style: .default, handler: { action in
-            self.appDelegate?.sentNotification(with: notificationType)
+            self.notifications.sentNotification(with: notificationType)
         }))
         present(alert, animated: true)
         
